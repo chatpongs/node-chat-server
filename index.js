@@ -14,12 +14,25 @@ net.createServer(function (socket) {
   clients.push(socket);
 
   // Send a nice welcome message and announce
-  socket.write("Welcome " + socket.name + "\n");
-  broadcast(socket.name + " joined the chat\n", socket);
+  // socket.write("Welcome " + socket.name + "\n");
+  // broadcast(socket.name + " joined the chat\n", socket);
 
   // Handle incoming messages from clients.
   socket.on('data', function (data) {
-    broadcast(socket.name + "> " + data, socket);
+    // broadcast(socket.name + "> " + data, socket);
+    var raw = String(data);
+    var input = raw.split('|');
+    switch(input[0]){
+      case 'login':
+        broadcast('history|3|u0001|u0002|u0003|player_data|auction_data');
+        break;
+      case 'auction':
+        broadcast('new_auction|a0001|u0001|fb0001|50M|emo1|60M');
+        break;
+      default:
+        console.log('the input does not match any case');
+        break;
+    }
   });
 
   // Remove the client from the list when it leaves
@@ -35,7 +48,7 @@ net.createServer(function (socket) {
   function broadcast(message, sender) {
     clients.forEach(function (client) {
       // Don't want to send it to sender
-      if (client === sender) return;
+      //if (client === sender) return;
       client.write(message);
     });
     // Log it to the server output too
